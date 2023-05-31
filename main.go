@@ -8,8 +8,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/elvekdarzhinov/kurs/pkg/bmp"
-	"github.com/elvekdarzhinov/kurs/pkg/lsb"
+	"github.com/elvekdarzhinov/lsb/pkg/bmp"
+	"github.com/elvekdarzhinov/lsb/pkg/lsb"
 )
 
 const (
@@ -25,7 +25,26 @@ const (
 
 func main() {
 	defer handleErr()
+	if len(os.Args) > 1 && os.Args[1] == "test" {
+		test()
+		return
+	}
 	run()
+}
+
+func test() {
+	img, _ := bmp.NewImage("res/girl.bmp")
+
+	nBits := 3
+
+	generateRandomFile("test/data.txt", (len(img.PixelData)/8*nBits-4))
+	message, _ := os.ReadFile("test/data.txt")
+
+	lsb.Encode(message, img.PixelData, nBits)
+	img.WriteToFile("out/encoded.bmp")
+
+	tmp, _ := bmp.NewImage("res/girl.bmp")
+	fmt.Println(bmp.Psnr(img.PixelData, tmp.PixelData))
 }
 
 func run() {
@@ -82,7 +101,7 @@ func handleErr() {
 	}
 }
 
-func generateInput(file string, size int) {
+func generateRandomFile(file string, size int) {
 	f, _ := os.Create(file)
 	w := bufio.NewWriter(f)
 	defer func() { w.Flush(); f.Close() }()

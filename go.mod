@@ -1,4 +1,4 @@
-module github.com/elvekdarzhinov/kurs
+module github.com/elvekdarzhinov/lsb
 
 go 1.20
 
